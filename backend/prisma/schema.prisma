@@ -1,0 +1,75 @@
+/*
+  This is the Prisma schema file for the application.
+  It defines the database models and their relationships.
+*/
+
+enum NodeStatus {
+  STOPPED
+  RUNNING
+  ERROR
+}
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Only for admins
+model Users {
+  id       String   @id @default(cuid())
+  password String
+
+  @@map("users")
+}
+
+// Schema for Qemu Images
+model Images {
+  baseId      String    @id @default(cuid())
+  name        String
+  path        String    @unique
+  size        Int
+  osType      String
+  logoUrl     String?   
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime?  @updatedAt
+  nodes       Nodes[]
+
+  @@map("images")
+}
+
+// Schema for Qemu Nodes
+model Nodes {
+  id                String    @id @default(cuid())
+  name              String
+  overlayPath       String    @unique
+  vncPort           Int       @unique
+  pid               Int       @unique
+  gucaConnectionId  String?   @unique
+  status            NodeStatus @default(STOPPED)
+  baseImageId       String
+  createdAt         DateTime  @default(now())
+
+  baseImage       Images   @relation(fields: [baseImageId], references: [baseId])
+  logs            Logs[]
+
+  @@map("nodes")
+  @@index([baseImageId, status]) // For faster querying of nodes by image and status
+}
+
+// Schema for Logs 
+model Logs {
+  id       String   @id @default(cuid())
+  nodeId   String
+  message  String
+  createdAt DateTime @default(now())
+
+  node     Nodes    @relation(fields: [nodeId], references: [id])
+
+  @@map("logs")
+}
+

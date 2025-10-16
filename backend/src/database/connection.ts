@@ -1,3 +1,7 @@
+/* Database connection setup using pg library ,
+   This file is responsible for connecting to our PostgreSQL database.
+*/
+
 import {Pool} from 'pg';
 import dotenv from 'dotenv'
 
