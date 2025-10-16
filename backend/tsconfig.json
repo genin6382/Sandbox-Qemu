@@ -1,0 +1,19 @@
+{
+  // Visit https://aka.ms/tsconfig to read more about this file
+  "compilerOptions": {
+	"target": "ES6",
+	"module": "commonjs",
+	"rootDir": "./src",
+	"outDir": "./dist",
+	"esModuleInterop": true,
+	"strict": true
+	},
+	  "include": [
+    "./src/**/*.ts",
+  ],
+  "exclude": [
+    "./node_modules",
+    "./dist"
+  ]
+
+}
