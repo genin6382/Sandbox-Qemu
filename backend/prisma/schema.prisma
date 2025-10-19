@@ -7,6 +7,7 @@ enum NodeStatus {
   STOPPED
   RUNNING
   ERROR
+  IDLE
 }
 
 generator client {
@@ -27,18 +28,32 @@ model Users {
   @@map("users")
 }
 
+model ISOs {
+  isoId        String   @id @default(cuid())
+  name      String  
+  path      String   @unique
+  createdAt DateTime @default(now())
+  Images   Images[]
+
+  @@index([name])
+  @@map("isos")
+}
+
+
 // Schema for Qemu Images
 model Images {
   baseId      String    @id @default(cuid())
   name        String
   path        String    @unique
   size        Int
-  osType      String
-  logoUrl     String?   
+  isoId       String
+  overlayCount Int       @default(0)
   createdAt   DateTime  @default(now())
-  updatedAt   DateTime?  @updatedAt
+
+  iso         ISOs      @relation(fields: [isoId], references: [isoId])
   nodes       Nodes[]
 
+  @@index([isoId,overlayCount])
   @@map("images")
 }
 
@@ -48,17 +63,17 @@ model Nodes {
   name              String
   overlayPath       String    @unique
   vncPort           Int       @unique
-  pid               Int       @unique
+  pid               Int?    
   gucaConnectionId  String?   @unique
-  status            NodeStatus @default(STOPPED)
-  baseImageId       String
+  status            NodeStatus @default(IDLE)
+  baseId            String
   createdAt         DateTime  @default(now())
 
-  baseImage       Images   @relation(fields: [baseImageId], references: [baseId])
+  baseImage       Images   @relation(fields: [baseId], references: [baseId])
   logs            Logs[]
 
   @@map("nodes")
-  @@index([baseImageId, status]) // For faster querying of nodes by image and status
+  @@index([baseId, status]) // For faster querying of nodes by image and status
 }
 
 // Schema for Logs 

@@ -1,0 +1,41 @@
+# API Endpoints for Node Management
+
+#ISO Routes
+
+###
+GET http://localhost:3000/isos
+
+#Image Routes 
+
+### Retrieve all images
+GET http://localhost:3000/images
+Description: Retrieve a list of all available base images.  
+
+#Node Routes
+
+### Retrieve All Nodes
+GET http://localhost:3000/nodes
+Description: Retrieve a list of all available Nodes
+
+### Create a Node
+POST http://localhost:3000/nodes
+Content-Type: application/json
+
+{
+  "name":"Node-1",
+  "isoId":"cmgxut9zh0000ry0zloi46hov"
+}
+
+### Start A VM
+POST http://localhost:3000/nodes/hd7ct8smf9hnh69eh98wht93/run
+
+### Stop A VM
+POST http://localhost:3000/nodes/hd7ct8smf9hnh69eh98wht93/stop
+
+### Wipe A VM
+POST http://localhost:3000/nodes/hd7ct8smf9hnh69eh98wht93/wipe
+
+
+
+
+

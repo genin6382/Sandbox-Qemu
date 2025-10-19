@@ -3,16 +3,17 @@ import * as imageRepository from '../repositories/imageRepository';
 import { imageSchema } from '../schemas/imageSchema';
 import {exec} from 'child_process';
 import { promisify } from 'util';
+import { createId } from '@paralleldrive/cuid2';
 
 const execAsync = promisify(exec);
-
 const IMAGE_BASE_PATH = '/var/lib/qemu/images/';
+
 
 export async function getAllImages(req:Request,res:Response){
     try{
         const images = await imageRepository.getAllImages();
         if (images.length === 0){
-            return res.status(404).json({message: "No images found"});
+        return res.status(404).json({message: "No images found"});
         }
         return res.status(200).json(images);
     }
@@ -20,7 +21,32 @@ export async function getAllImages(req:Request,res:Response){
         console.error(err);
         return res.status(500).json({message: "Internal server error"});
     }
-   
+}
+
+
+export async function createBaseImageForISO(isoId: string, size: number = 20) {
+    const imageName = `base-${isoId}-${createId()}`;
+    const imagePath = `${IMAGE_BASE_PATH}${imageName}.qcow2`;
+    
+    const imageCommand = `qemu-img create -f qcow2 ${imagePath} ${size}G`;
+    const {stdout, stderr} = await execAsync(imageCommand);
+    
+    if (stderr) {
+        console.error('Error creating base image:', stderr);
+        throw new Error('Failed to create base image file');
+    }
+    
+    console.log('Base image created:', stdout);
+    
+    const newImage = await imageRepository.createImage({
+        name: imageName,
+        path: imagePath,
+        size,
+        isoId,
+        overlayCount: 0
+    });
+    
+    return newImage;
 }
 
 export async function uploadImage(req:Request,res:Response){
@@ -31,30 +57,29 @@ export async function uploadImage(req:Request,res:Response){
         if (!parsed.success){
             return res.status(400).json({message: "Invalid request data"});
         }
+        
         const imageData = parsed.data;
-
-        const imagePath = `qemu-img create -f qcow2 ${IMAGE_BASE_PATH}${imageData.name}.qcow2 ${imageData.size}G`;
-
-        const {stdout,stderr} = await execAsync(imagePath);
+        const imageCommand = `qemu-img create -f qcow2 ${IMAGE_BASE_PATH}${imageData.name}.qcow2 ${imageData.size}G`;
+        const {stdout,stderr} = await execAsync(imageCommand);
 
         if (stderr){
-            console.error(stderr);
+            console.log(stderr);
             return res.status(500).json({message: "Error creating image"});
         }
-
-        const newImage = await imageRepository.createImage({
-           ...imageData,
-           path : imagePath
-        })
         
+        const newImage = await imageRepository.createImage({
+            ...imageData,
+            path : `${IMAGE_BASE_PATH}${imageData.name}.qcow2`
+        })
+
         if (!newImage){
             return res.status(500).json({message: "Error saving image to database"});
         }
-
+        
         return res.status(201).json(newImage);
     }
     catch(err){
-        console.error(err);
+        console.log(err);
         return res.status(500).json({message: "Internal server error"});
     }
 }
@@ -67,12 +92,12 @@ export async function deleteImage(req:Request,res:Response){
         if (!image){
             return res.status(404).json({message: "Image not found"});
         }
-
+        
         const deleteCommand = `rm -f ${IMAGE_BASE_PATH}${image.name}.qcow2`;
         const {stdout,stderr} = await execAsync(deleteCommand);
 
         if (stderr){
-            console.error(stderr);
+            console.log(stderr);
             return res.status(500).json({message: "Error deleting image file"});
         }
         
@@ -80,6 +105,7 @@ export async function deleteImage(req:Request,res:Response){
         if (deleted.count === 0){
             return res.status(500).json({message: "Error deleting image from database"});
         }
+        
         return res.status(200).json({deleted, message: "Image deleted successfully"});
     }
     catch(err){
