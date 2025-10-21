@@ -1,4 +1,5 @@
 // schemas/nodeSchemas.ts
+/**FIle to verify input while creating a new Node */
 import { z } from 'zod';
 
 export const createNodeSchema = z.object({

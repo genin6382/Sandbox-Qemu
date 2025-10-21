@@ -1,3 +1,4 @@
+/**Routes for /admins */
 import express from 'express';
 import * as adminService from '../services/adminService'
 const router = express.Router();

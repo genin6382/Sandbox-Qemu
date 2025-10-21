@@ -18,19 +18,21 @@ const execAsync = promisify(exec);
 const OVERLAYS_BASE_PATH = '/var/lib/qemu/overlays';
 const MAX_OVERLAYS = 5; 
 
-
+/**Creates overlay for a particular base Image */
 export async function createOverlay(baseImagePath: string, overlayPath: string){
     const command = `qemu-img create -f qcow2 -b ${baseImagePath} -F qcow2 ${overlayPath}`;
     const { stdout, stderr } = await execAsync(command);
     console.log('Overlay created:', stdout || stderr);
     await access(overlayPath);
 }
-
+/**Deletes overlay */
 export async function deleteOverlay(overlayPath: string) {
     await execAsync(`rm -f ${overlayPath}`);
 }
 
-
+/**Checks if base Image is present for a particular ISO , if not present , it creates a new Base Image. If number of overlays for that particular base Image is exceeded 
+ ,It creates a new base image* 
+ */
 async function allocateBaseImageForISO(isoId: string) {
     //find an available base image less than MAX_OVERLAYS
     let baseImage = await imageRepository.findAvailableImageForISO(
@@ -46,7 +48,7 @@ async function allocateBaseImageForISO(isoId: string) {
     return baseImage;
 }
 
-
+/**Retrieves All nodes */
 export async function getAllNodes(req: Request,res:Response) {
   try{
     const nodes = await nodeRepository.getAllNodes();
@@ -62,7 +64,11 @@ export async function getAllNodes(req: Request,res:Response) {
   }
 }
 
-
+/** 
+ * Creates a new node by generating an overlay image from a base ISO, 
+ * allocating a VNC port, creating a Guacamole connection, and storing 
+ * all metadata in the database transactionally.
+ */
 export async function createNode(req: Request, res: Response) {
     const { name, isoId } = req.body; 
     const iso = await isoRepository.getIsoById(isoId);
@@ -134,7 +140,10 @@ export async function createNode(req: Request, res: Response) {
         return res.status(500).json({ error: 'Failed to create node', details: error.message });
     }
 }
-
+/**
+ * Starts a VM (QEMU instance) for the given node by attaching the ISO, 
+ * running it in daemonized mode, storing its PID, and updating the node’s status.
+ */
 export async function startVM(req: Request, res: Response) {
     try {
       const { nodeId } = req.params;
@@ -192,7 +201,10 @@ export async function startVM(req: Request, res: Response) {
       res.status(500).json({ error: "Failed to start VM" });
     }
 }
-
+/**
+ * Stops a running VM by sending a SIGTERM signal to its process, 
+ * clearing its PID, and updating the node’s status to STOPPED.
+ */
 export async function stopVM(req: Request,res:Response){
   try{
     const { nodeId } = req.params;
@@ -223,6 +235,13 @@ export async function stopVM(req: Request,res:Response){
     res.status(500).json({error:"Failed to stop VM"});
   }
 }
+
+/**
+ * Completely wipes a node by stopping it if running, 
+ * releasing its VNC port, deleting its overlay file, 
+ * removing database records, decrementing overlay count, 
+ * and deleting its Guacamole connection.
+ */
 export async function wipeNode(req: Request, res: Response) {
     try {
       const { nodeId } = req.params;

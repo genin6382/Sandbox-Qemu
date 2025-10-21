@@ -1,6 +1,8 @@
+/**This file is for Interacting with Users table using prisma */
+
 import prisma from "../database/prisma";
 
-
+/**Function to register User */
 export async function registerUser(name: string, password: string) {
   return await prisma.users.create({
     data: { name, password },

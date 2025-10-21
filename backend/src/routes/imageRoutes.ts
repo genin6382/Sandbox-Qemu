@@ -1,3 +1,4 @@
+/**Routes for /images */
 import express from 'express';
 import * as imageService from '../services/imageService';
 

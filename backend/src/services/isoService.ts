@@ -58,6 +58,8 @@ const upload = multer({
   },
 }).single('iso');
 
+
+/**This functionn recieves ISO as .iso file input ,Uploads it to a specific folder and saves it in database */
 export function createISO(req: Request, res: Response) {
   upload(req, res, async function (err) {
     if (err) {
@@ -90,7 +92,7 @@ export function createISO(req: Request, res: Response) {
     }
   });
 }
-
+/**Retrieve all ISOs */
 export async function getAllISOs(req:Request,res:Response){
   try{
      const isos = await isoRepository.getAllIso();

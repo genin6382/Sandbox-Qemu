@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import  { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import "../styles/Login.css";
 
+/**Login Functionality to navigate between guest user and admin user */
 export default function Login({ onLogin }) {
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");

@@ -1,3 +1,4 @@
+/**Routes for /logs */
 import express from 'express';
 import { viewLogsById } from '../services/logService';
 const router = express.Router();

@@ -1,3 +1,4 @@
+/**This file is used to implement the logic for /users functionalities */
 import { Request, Response } from "express";
 import bcrypt from "bcrypt";
 import { registerUser as saveUser, findUserByName } from "../repositories/adminRepository";
@@ -5,6 +6,7 @@ import prisma from '../database/prisma'
 
 const SALT_ROUNDS = 10;
 
+/**Register new user using given username and password using Hashing */
 export async function registerUser(req: Request, res: Response) {
     try {
         const { name, password } = req.body;
@@ -30,7 +32,7 @@ export async function registerUser(req: Request, res: Response) {
         return res.status(500).json({ message: "Internal server error" });
     }
 }
-
+/**Login function, checks if given username matches the password */
 export async function loginUser(req: Request, res: Response) {
     try {
         const { name, password } = req.body;
@@ -61,6 +63,7 @@ export async function loginUser(req: Request, res: Response) {
     }
 }
 
+/**Used for analytical purpose , Returns Count of (isos,images,nodes,status) */
 export async function getSummary(req:Request, res:Response) {
     try {
         const isosCount = await prisma.iSOs.count();

@@ -1,3 +1,4 @@
+/**File to verify input while Creating new image */
 import {z} from 'zod';
 
 export const imageSchema = z.object({

@@ -3,7 +3,16 @@ import { NodeStatus } from '../generated/prisma';
 
 
 export async function getAllNodes() {
-    return await prisma.nodes.findMany();
+    const nodes = await prisma.nodes.findMany({
+      include: {
+        baseImage: {
+          include: {
+            iso: true  
+          }
+        }
+      }
+    });
+    return nodes;
 }
 
 

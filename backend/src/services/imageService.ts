@@ -1,3 +1,4 @@
+/**File for implementing logic behind /images route calls */
 import {Request,Response} from 'express';
 import * as imageRepository from '../repositories/imageRepository';
 import { imageSchema } from '../schemas/imageSchema';
@@ -8,12 +9,12 @@ import { createId } from '@paralleldrive/cuid2';
 const execAsync = promisify(exec);
 const IMAGE_BASE_PATH = '/var/lib/qemu/images/';
 
-
+/**Returns list of images */
 export async function getAllImages(req:Request,res:Response){
     try{
         const images = await imageRepository.getAllImages();
         if (images.length === 0){
-        return res.status(404).json({message: "No images found"});
+            return res.status(200).json([]);
         }
         return res.status(200).json(images);
     }
@@ -23,7 +24,7 @@ export async function getAllImages(req:Request,res:Response){
     }
 }
 
-
+/**Creates base Image for specific ISO */
 export async function createBaseImageForISO(isoId: string, size: number = 20) {
     const imageName = `base-${isoId}-${createId()}`;
     const imagePath = `${IMAGE_BASE_PATH}${imageName}.qcow2`;
@@ -48,7 +49,7 @@ export async function createBaseImageForISO(isoId: string, size: number = 20) {
     
     return newImage;
 }
-
+/**Function to create qemu base image */
 export async function uploadImage(req:Request,res:Response){
     try{
         const reqData = req.body;
@@ -84,6 +85,7 @@ export async function uploadImage(req:Request,res:Response){
     }
 }
 
+/**Deletes image */
 export async function deleteImage(req:Request,res:Response){
     try{
         const imageId = req.params.id;

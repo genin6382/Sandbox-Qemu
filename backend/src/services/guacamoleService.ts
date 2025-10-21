@@ -1,3 +1,4 @@
+/**File to establish Guacamole connection */
 import axios from 'axios';
 import dotenv from 'dotenv'
 import path from 'path';
@@ -14,6 +15,7 @@ const GUACAMOLE_PASSWORD = (process.env.GUACAMOLE_PASSWORD );
 let cachedAuthToken: string | null = null;
 let tokenExpiry: number = 0;
 
+/**Get Guacamole Auth token to establish connection */
 export async function getAuthToken() {
     if (cachedAuthToken && Date.now() < tokenExpiry) {
       return cachedAuthToken;
@@ -34,7 +36,7 @@ export async function getAuthToken() {
       throw new Error('Guacamole authentication failed');
     }
 }
-
+/**Creates a new Guacamole VNC connection for a given node by calling the Guacamole REST API */
 export async function createVNCConnection(nodeName: string, vncPort: number) {
     const token = await getAuthToken();
     const url = `${GUACAMOLE_URL}/api/session/data/${GUACAMOLE_DATASOURCE}/connections?token=${token}`;
@@ -69,13 +71,13 @@ export async function createVNCConnection(nodeName: string, vncPort: number) {
       throw new Error('Failed to create Guacamole connection');
     }
 }
-
+/**Generates a Guacamole client URL using the given connection ID by encoding */
 export function generateConnectionURL(connectionId: string): string {
   const connectionString = `${connectionId}\x00c\x00${GUACAMOLE_DATASOURCE}`;
   const encodedString = Buffer.from(connectionString).toString('base64');
   return `${GUACAMOLE_URL}/#/client/${encodedString}`;
 }
-
+/** Deletes an existing Guacamole connection by sending a DELETE request to the Guacamole REST API using the connection ID. */
 export async function deleteConnection(connectionId: string): Promise<void> {
   try {
     const token = await getAuthToken();

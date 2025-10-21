@@ -1,3 +1,4 @@
+/**Routes for /nodes */
 import express from 'express';
 import * as nodeService from '../services/nodeService';
 

@@ -1,6 +1,9 @@
 import React from "react";
 import { Navigate } from "react-router-dom";
-
+/**
+ * Assigns user a role -> guest || admin .
+ * Helps prevent guest from accessing admin dashboard
+ */
 export default function ProtectedRoute({ user, role, children }) {
   if (!user) return <Navigate to="/" />;
   if (role === "admin" && user.role !== "admin") return <Navigate to="/" />;
