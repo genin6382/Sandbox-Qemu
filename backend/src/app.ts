@@ -17,4 +17,13 @@ app.use('/images', imageRoutes);
 app.use('/nodes', nodeRoutes);
 app.use('/logs',logRoutes);
 
+// Health check route
+app.get('/health', (req, res) => {
+  res.status(200).json({
+    status: 'ok',
+    message: 'Backend is running',
+    timestamp: new Date().toISOString()
+  });
+});
+
 export default app;

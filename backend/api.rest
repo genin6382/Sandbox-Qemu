@@ -38,3 +38,13 @@ POST http://localhost:3000/nodes/hd7ct8smf9hnh69eh98wht93/stop
 
 ### Wipe A VM
 POST http://localhost:3000/nodes/hd7ct8smf9hnh69eh98wht93/wipe
+
+
+###
+POST http://localhost:3000/admins/register
+Content-Type: : application/json
+
+{
+  "name":"admin",
+  "password": "123"
+}

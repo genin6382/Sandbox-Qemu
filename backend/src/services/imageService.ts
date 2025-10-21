@@ -5,9 +5,14 @@ import { imageSchema } from '../schemas/imageSchema';
 import {exec} from 'child_process';
 import { promisify } from 'util';
 import { createId } from '@paralleldrive/cuid2';
+import fs from 'fs';
 
 const execAsync = promisify(exec);
-const IMAGE_BASE_PATH = '/var/lib/qemu/images/';
+const IMAGE_BASE_PATH = '../qemu/images/';
+
+if (!fs.existsSync(IMAGE_BASE_PATH)) {
+  fs.mkdirSync(IMAGE_BASE_PATH, { recursive: true });
+}
 
 /**Returns list of images */
 export async function getAllImages(req:Request,res:Response){

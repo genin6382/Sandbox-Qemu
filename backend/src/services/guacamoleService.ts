@@ -3,9 +3,9 @@ import axios from 'axios';
 import dotenv from 'dotenv'
 import path from 'path';
 
-const envPath = path.resolve(__dirname, '..', '.env');
-
+const envPath = path.resolve(__dirname, '..', '..', '.env'); 
 dotenv.config({ path: envPath });
+
 
 const GUACAMOLE_URL = (process.env.GUACAMOLE_URL);
 const GUACAMOLE_DATASOURCE = (process.env.GUACAMOLE_DATASOURCE );

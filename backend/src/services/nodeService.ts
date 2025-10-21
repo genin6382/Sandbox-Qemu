@@ -15,7 +15,7 @@ import * as isoRepository from '../repositories/isoRepository';
 import { createBaseImageForISO } from './imageService';
 
 const execAsync = promisify(exec);
-const OVERLAYS_BASE_PATH = '/var/lib/qemu/overlays';
+const OVERLAYS_BASE_PATH = '../qemu/overlays';
 const MAX_OVERLAYS = 5; 
 
 /**Creates overlay for a particular base Image */

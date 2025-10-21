@@ -1,11 +1,14 @@
 /* Database connection setup using pg library ,
    This file is responsible for connecting to our PostgreSQL database.
 */
-
 import {Pool} from 'pg';
 import dotenv from 'dotenv'
+import path from 'path';
 
-dotenv.config();
+const envPath = path.resolve(__dirname, '..', '..', '.env'); 
+dotenv.config({ path: envPath });
+
+console.log(process.env);
 
 const pool = new Pool({
     user: process.env.POSTGRES_USER,
