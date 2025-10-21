@@ -257,5 +257,5 @@ VM3 (Fedora)  → VNC Tab 3 (localhost:8080/guacamole/#/client/uuid3)
 
 ---
 
-**License**: MIT  
+
 **Contributors**: Welcome! Please submit pull requests or open issues for bugs and feature requests.
