@@ -7,6 +7,7 @@ import { access } from 'fs/promises';
 import prisma from '../database/prisma';
 import * as guacamoleService from './guacamoleService';
 import { allocateVncPort } from '../utils/portManager';
+import { waitForVNCPort } from '../utils/portManager';
 import * as imageRepository from '../repositories/imageRepository';
 import { createLogEntry } from '../repositories/logRepository';
 import * as nodeRepository from '../repositories/nodeRepository';
@@ -53,7 +54,7 @@ export async function getAllNodes(req: Request,res:Response) {
       throw new Error("No nodes found");
     }
     
-    res.status(200).json({nodes});
+    res.status(200).json(nodes);
   }
   catch(error){
     console.error("Error fetching nodes:",error);
@@ -134,7 +135,6 @@ export async function createNode(req: Request, res: Response) {
     }
 }
 
-
 export async function startVM(req: Request, res: Response) {
     try {
       const { nodeId } = req.params;
@@ -151,49 +151,40 @@ export async function startVM(req: Request, res: Response) {
         return res.status(400).json({ message: "Node is already running" });
       }
       
-      // Base QEMU command
-      let command = `qemu-system-x86_64 -drive file=${node.overlayPath},format=qcow2 -m 1024 -vnc :${vncDisplay}`;
-      
-      if (node.status === "IDLE") {
-        const isoPath = node.baseImage.iso.path; 
-        command += ` -cdrom ${isoPath}`;
-        console.log(`First boot detected (IDLE status). Attaching ISO: ${isoPath}`);
-      } 
-      else {
-        console.log(`Subsequent boot detected (STOPPED status). No ISO needed.`);
+      // Clean up stale PID file
+      try {
+        await execAsync(`rm -f ${pidFilePath}`);
+      } catch (err) {
+        console.log('No stale PID file to clean');
       }
-      command += ` -daemonize -pidfile ${pidFilePath} -enable-kvm`;
+      
+      // ALWAYS attach ISO for IDLE and STOPPED (until installed)
+      const isoPath = node.baseImage.iso.path;
+      let command = `qemu-system-x86_64 -drive file=${node.overlayPath},format=qcow2 -m 1024 -vnc :${vncDisplay} -cdrom ${isoPath} -boot d -daemonize -pidfile ${pidFilePath} -enable-kvm`;
       
       console.log('Executing QEMU command:', command);
       
       const { stdout, stderr } = await execAsync(command);
       console.log('VM started:', stdout || stderr);
       
-      if (stderr) {
+      if (stderr && !stderr.includes('warning')) {
         return res.status(500).json({ message: "Failed to start VM", error: stderr });
       }
     
       const pid = parseInt((await execAsync(`cat ${pidFilePath}`)).stdout.trim(), 10);
+      
       const updatedNode = await nodeRepository.updateNodeById(nodeId, pid, "RUNNING");
       
       if (!updatedNode) {
         return res.status(500).json({ message: "Failed to update node status" });
       }
       
-      // Create log entry
-      const logEntry = await createLogEntry(
-        nodeId, 
-        `Node ${node.name} started successfully${node.status === "IDLE" ? " with ISO mounted" : ""}.`
-      );
-      
-      if (!logEntry) {
-        console.error(`Failed to create log entry for node ${nodeId}`);
-      }
+      await createLogEntry(nodeId, `Node ${node.name} started with ISO attached.`);
       
       res.status(200).json({ 
         message: "VM started successfully", 
         node: updatedNode,
-        isoAttached: node.status === "IDLE"
+        isoAttached: true
       });
       
     } catch (error) {
@@ -239,6 +230,25 @@ export async function wipeNode(req: Request, res: Response) {
 
       if (!node) {
         return res.status(404).json({ message: 'Node not found' });
+      }
+
+      if (node.status === "RUNNING" && node.pid) {
+        try {
+          process.kill(node.pid, 'SIGTERM');
+          await new Promise(resolve => setTimeout(resolve, 500));
+        } catch (err) {
+          console.log('Process already stopped or not found');
+        }
+      }
+
+      // Release VNC port
+      try {
+        const { stdout } = await execAsync(`lsof -ti:${node.vncPort} || echo ""`);
+        if (stdout.trim()) {
+          await execAsync(`kill -9 ${stdout.trim()}`);
+        }
+      } catch (err) {
+        console.log('Port already free');
       }
 
       await createLogEntry(nodeId, `Node ${node.name} deletion initiated.`);

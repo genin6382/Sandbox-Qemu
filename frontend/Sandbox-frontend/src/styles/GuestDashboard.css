@@ -1,0 +1,324 @@
+.guest-dashboard-container {
+  display: flex;
+  height: 100vh;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background: #ecf0f1;
+}
+
+/* Sidebar */
+.sidebar {
+  width: 280px;
+  background: #2c3e50;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.sidebar-header {
+  padding: 20px;
+  background: #34495e;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.sidebar-header h2 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.logout-btn {
+  padding: 8px 15px;
+  background: #e74c3c;
+  border: none;
+  color: white;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background 0.3s;
+}
+
+.logout-btn:hover {
+  background: #c0392b;
+}
+
+.iso-list {
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.iso-item {
+  background: #34495e;
+  padding: 15px;
+  border-radius: 10px;
+  margin-bottom: 15px;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.iso-item:hover {
+  background: #3d5a73;
+  transform: translateX(5px);
+}
+
+.sidebar-pc-icon {
+  width: 60px;
+  height: 60px;
+  margin-bottom: 10px;
+}
+
+.iso-item p {
+  margin: 0;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+/* Workspace */
+.workspace {
+  flex: 1;
+  padding: 40px;
+  overflow-y: auto;
+}
+
+.empty-state {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  color: #7f8c8d;
+  font-size: 18px;
+  font-style: italic;
+}
+
+.nodes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 25px;
+}
+
+.node-card {
+  background: white;
+  border-radius: 12px;
+  padding: 25px;
+  text-align: center;
+  cursor: pointer;
+  box-shadow: 0 3px 15px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.node-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 5px 25px rgba(0, 0, 0, 0.15);
+}
+
+.node-card.running {
+  border: 3px solid #27ae60;
+}
+
+.node-card.idle {
+  border: 3px solid #95a5a6;
+}
+
+.node-card.stopped {
+  border: 3px solid #e74c3c;
+}
+
+.node-pc-icon {
+  width: 100px;
+  height: 100px;
+  margin-bottom: 15px;
+}
+
+.node-card.running .node-pc-icon {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+.node-name {
+  font-weight: 700;
+  font-size: 16px;
+  color: #2c3e50;
+  margin: 10px 0;
+}
+
+.node-status {
+  display: inline-block;
+  padding: 5px 12px;
+  border-radius: 15px;
+  font-size: 12px;
+  font-weight: 600;
+  color: white;
+}
+
+.status-running {
+  background: #27ae60;
+}
+
+.status-idle {
+  background: #95a5a6;
+}
+
+.status-stopped {
+  background: #e74c3c;
+}
+
+/* Control Modal */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.control-modal {
+  background: white;
+  padding: 30px;
+  border-radius: 15px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+  min-width: 400px;
+  text-align: center;
+}
+
+.control-modal h3 {
+  margin: 0 0 15px;
+  color: #2c3e50;
+}
+
+.modal-buttons {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.modal-buttons button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+  background: #3498db;
+  color: white;
+}
+
+.modal-buttons button:hover:not(:disabled) {
+  background: #2980b9;
+  transform: translateY(-2px);
+}
+
+.modal-buttons button:disabled {
+  background: #bdc3c7;
+  cursor: not-allowed;
+}
+
+.wipe-btn {
+  background: #e74c3c !important;
+}
+
+.wipe-btn:hover:not(:disabled) {
+  background: #c0392b !important;
+}
+
+.cancel-btn {
+  background: #95a5a6 !important;
+}
+
+.cancel-btn:hover {
+  background: #7f8c8d !important;
+}
+/* Three dots menu button */
+.node-menu-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 24px;
+  font-weight: bold;
+  color: #7f8c8d;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+  z-index: 10;
+}
+
+.node-menu-btn:hover {
+  background: rgba(0, 0, 0, 0.1);
+  color: #2c3e50;
+}
+
+/* Dropdown menu */
+.node-dropdown-menu {
+  position: absolute;
+  top: 45px;
+  right: 10px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+  padding: 8px 0;
+  min-width: 120px;
+  z-index: 100;
+}
+
+.node-dropdown-menu button {
+  width: 100%;
+  padding: 10px 15px;
+  border: none;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.2s;
+  font-size: 14px;
+  color: #2c3e50;
+}
+
+.node-dropdown-menu button:hover {
+  background: #ecf0f1;
+}
+
+.node-dropdown-menu button.danger {
+  color: #e74c3c;
+}
+
+.node-dropdown-menu button.danger:hover {
+  background: #fee;
+}
+
+/* Loading overlay on card */
+.loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  color: #3498db;
+  border-radius: 12px;
+}

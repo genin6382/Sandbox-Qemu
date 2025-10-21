@@ -47,6 +47,7 @@ export async function createVNCConnection(nodeName: string, vncPort: number) {
       parameters: {
         hostname: 'host.docker.internal',  
         port: vncPort.toString(),
+        autoretry: '5',
         password: '',
         'color-depth': '24',
         'resize-method': 'display-update',

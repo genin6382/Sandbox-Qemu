@@ -1,0 +1,210 @@
+/* AdminDashboard.css */
+
+body {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f5f7fa;
+  color: #333;
+  margin: 0;
+  padding: 0;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 30px;
+  background-color: #2a3f54;
+  color: white;
+}
+
+header h1 {
+  margin: 0;
+  font-weight: 600;
+}
+
+header button {
+  background-color: #e74c3c;
+  border: none;
+  color: white;
+  padding: 8px 14px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.3s ease;
+}
+
+header button:hover {
+  background-color: #c0392b;
+}
+
+nav {
+  padding: 15px 30px;
+  background-color: white;
+  display: flex;
+  gap: 12px;
+  border-bottom: 1px solid #ddd;
+}
+
+nav button {
+  background-color: #3498db;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 22px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.3s ease;
+}
+
+nav button:hover,
+nav button.active {
+  background-color: #2980b9;
+}
+
+section {
+  padding: 20px 30px;
+  background-color: white;
+  margin: 20px 30px;
+  border-radius: 10px;
+  box-shadow: 0 3px 12px rgb(0 0 0 / 0.1);
+  min-height: 400px;
+}
+
+/* Summary cards container */
+.summary-cards {
+  display: flex;
+  gap: 25px;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  padding: 0 10px;
+}
+
+.summary-card {
+  background-color: #f0f4f8;
+  border-radius: 12px;
+  padding: 22px 30px;
+  width: 180px;
+  text-align: center;
+  box-shadow: 0 2px 8px rgb(0 0 0 / 0.07);
+  transition: box-shadow 0.3s ease;
+}
+
+.summary-card:hover {
+  box-shadow: 0 4px 15px rgb(0 0 0 / 0.12);
+}
+
+.summary-card h3 {
+  margin: 0 0 10px;
+  color: #2980b9;
+  font-weight: 700;
+  font-size: 18px;
+}
+
+.summary-card p {
+  font-size: 28px;
+  font-weight: 700;
+  color: #34495e;
+  margin: 0;
+}
+
+/* Tables */
+table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 14px;
+  color: #444;
+}
+
+thead {
+  background-color: #3498db;
+  color: white;
+  text-align: left;
+}
+
+thead th {
+  padding: 12px 15px;
+  user-select: none;
+}
+
+tbody tr {
+  border-bottom: 1px solid #e1e8f0;
+  transition: background-color 0.25s ease;
+  cursor: default;
+}
+
+tbody tr:hover {
+  background-color: #ecf0f1;
+}
+
+tbody td {
+  padding: 12px 15px;
+  vertical-align: middle;
+}
+
+button {
+  padding: 6px 14px;
+  border: none;
+  border-radius: 6px;
+  background-color: #3498db;
+  color: white;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background-color: #2980b9;
+}
+
+button:disabled {
+  background-color: #bdc3c7;
+  cursor: not-allowed;
+}
+
+/* Inputs */
+input[type="text"],
+input[type="password"],
+input[type="file"] {
+  padding: 10px;
+  margin: 10px 5px 15px 0;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+input[type="text"]:focus,
+input[type="password"]:focus,
+input[type="file"]:focus {
+  border-color: #3498db;
+  outline: none;
+}
+
+/* Log list */
+.log-list {
+  max-height: 350px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 12px;
+  background-color: #f9f9f9;
+  font-family: monospace;
+  font-size: 13px;
+}
+
+.log-list li {
+  margin-bottom: 8px;
+  white-space: pre-wrap;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .summary-cards {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  section {
+    margin: 10px;
+  }
+}

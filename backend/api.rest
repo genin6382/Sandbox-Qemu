@@ -5,6 +5,10 @@
 ###
 GET http://localhost:3000/isos
 
+###
+POST http://localhost:3000/isos
+
+
 #Image Routes 
 
 ### Retrieve all images
@@ -34,8 +38,3 @@ POST http://localhost:3000/nodes/hd7ct8smf9hnh69eh98wht93/stop
 
 ### Wipe A VM
 POST http://localhost:3000/nodes/hd7ct8smf9hnh69eh98wht93/wipe
-
-
-
-
-

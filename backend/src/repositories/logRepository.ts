@@ -8,3 +8,8 @@ export async function createLogEntry(nodeId: string, message: string) {
         }
     });
 }
+export async function getLogById(nodeId: string) {
+    return await prisma.logs.findMany({
+        where: { nodeId }
+    });
+}
