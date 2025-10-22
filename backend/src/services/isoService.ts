@@ -5,7 +5,7 @@ import fs from 'fs';
 import prisma from '../database/prisma';
 import * as isoRepository from '../repositories/isoRepository';
 
-const ISO_UPLOAD_DIR = '../qemu/isos';
+const ISO_UPLOAD_DIR = path.join(process.cwd(), 'qemu', 'isos');
 
 if (!fs.existsSync(ISO_UPLOAD_DIR)) {
   fs.mkdirSync(ISO_UPLOAD_DIR, { recursive: true });

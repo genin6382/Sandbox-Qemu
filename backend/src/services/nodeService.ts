@@ -7,15 +7,21 @@ import { access } from 'fs/promises';
 import prisma from '../database/prisma';
 import * as guacamoleService from './guacamoleService';
 import { allocateVncPort } from '../utils/portManager';
-import { waitForVNCPort } from '../utils/portManager';
 import * as imageRepository from '../repositories/imageRepository';
 import { createLogEntry } from '../repositories/logRepository';
 import * as nodeRepository from '../repositories/nodeRepository';
 import * as isoRepository from '../repositories/isoRepository';
 import { createBaseImageForISO } from './imageService';
+import fs from 'fs';
+import path from 'path'
 
 const execAsync = promisify(exec);
-const OVERLAYS_BASE_PATH = '../qemu/overlays';
+const OVERLAYS_BASE_PATH = path.join(process.cwd(), 'qemu', 'overlays'); 
+
+if (!fs.existsSync(OVERLAYS_BASE_PATH)) {
+  fs.mkdirSync(OVERLAYS_BASE_PATH, { recursive: true });
+}
+
 const MAX_OVERLAYS = 5; 
 
 /**Creates overlay for a particular base Image */
@@ -78,7 +84,7 @@ export async function createNode(req: Request, res: Response) {
     }
     
     const nodeId = createId();
-    const overlayPath = `${OVERLAYS_BASE_PATH}/node_${nodeId}.qcow2`;
+    const overlayPath = path.join(OVERLAYS_BASE_PATH, `node_${nodeId}.qcow2`); ;
     const vncPort = await allocateVncPort();
     
     let overlayCreated = false;
@@ -169,7 +175,7 @@ export async function startVM(req: Request, res: Response) {
       
       // ALWAYS attach ISO for IDLE and STOPPED (until installed)
       const isoPath = node.baseImage.iso.path;
-      let command = `qemu-system-x86_64 -drive file=${node.overlayPath},format=qcow2 -m 1024 -vnc :${vncDisplay} -cdrom ${isoPath} -boot d -daemonize -pidfile ${pidFilePath} -enable-kvm`;
+      let command = `qemu-system-x86_64 -drive file=${node.overlayPath},format=qcow2 -m 1024 -vnc :${vncDisplay} -cdrom ${isoPath} -boot d -daemonize -pidfile ${pidFilePath} `;
       
       console.log('Executing QEMU command:', command);
       

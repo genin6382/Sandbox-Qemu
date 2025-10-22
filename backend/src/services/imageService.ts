@@ -6,9 +6,10 @@ import {exec} from 'child_process';
 import { promisify } from 'util';
 import { createId } from '@paralleldrive/cuid2';
 import fs from 'fs';
+import path from 'path';
 
 const execAsync = promisify(exec);
-const IMAGE_BASE_PATH = '../qemu/images/';
+const IMAGE_BASE_PATH = path.join(process.cwd(), 'qemu', 'images');
 
 if (!fs.existsSync(IMAGE_BASE_PATH)) {
   fs.mkdirSync(IMAGE_BASE_PATH, { recursive: true });
@@ -32,7 +33,7 @@ export async function getAllImages(req:Request,res:Response){
 /**Creates base Image for specific ISO */
 export async function createBaseImageForISO(isoId: string, size: number = 20) {
     const imageName = `base-${isoId}-${createId()}`;
-    const imagePath = `${IMAGE_BASE_PATH}${imageName}.qcow2`;
+    const imagePath = path.join(IMAGE_BASE_PATH, `${imageName}.qcow2`); //This creates proper path seperators 
     
     const imageCommand = `qemu-img create -f qcow2 ${imagePath} ${size}G`;
     const {stdout, stderr} = await execAsync(imageCommand);
@@ -75,7 +76,7 @@ export async function uploadImage(req:Request,res:Response){
         
         const newImage = await imageRepository.createImage({
             ...imageData,
-            path : `${IMAGE_BASE_PATH}${imageData.name}.qcow2`
+            path : path.join(IMAGE_BASE_PATH, `${imageData.name}.qcow2`)
         })
 
         if (!newImage){

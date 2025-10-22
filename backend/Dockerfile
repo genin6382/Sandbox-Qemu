@@ -1,7 +1,7 @@
 FROM node:22
 
 RUN apt-get update && \
-    apt-get install -y qemu-utils qemu-system-x86 qemu-kvm libvirt-clients libvirt-daemon-system  bash && \
+    apt-get install -y qemu-utils qemu-system-x86 && \
     rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app

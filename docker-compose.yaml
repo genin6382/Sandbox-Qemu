@@ -73,6 +73,8 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+    volumes:
+      - ./qemu:/app/qemu  
   frontend:
     build: ./frontend/Sandbox-frontend
     container_name: frontend
